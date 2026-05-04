@@ -1,8 +1,10 @@
 package com.ms.moviestvshows.data.remote.api
 
 import com.ms.moviestvshows.data.remote.dto.MovieListResponseDto
+import com.ms.moviestvshows.data.remote.dto.PersonListResponseDto
 import com.ms.moviestvshows.data.remote.dto.TvSeriesListResponseDto
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TmdbApi {
@@ -53,6 +55,19 @@ interface TmdbApi {
         @Query("api_key") apiKey: String,
         @Query("page") page: Int = 1,
     ): TvSeriesListResponseDto
+
+    @GET("person/popular")
+    suspend fun getPopularPeople(
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int = 1,
+    ): PersonListResponseDto
+
+    @GET("trending/person/{time_window}")
+    suspend fun getTrendingPeople(
+        @Path("time_window") timeWindow: String,
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int = 1,
+    ): PersonListResponseDto
 
     companion object {
         const val BASE_URL = "https://api.themoviedb.org/3/"

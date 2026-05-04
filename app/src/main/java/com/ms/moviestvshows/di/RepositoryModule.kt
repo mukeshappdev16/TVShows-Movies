@@ -1,8 +1,10 @@
 package com.ms.moviestvshows.di
 
 import com.ms.moviestvshows.data.repository.MovieRepositoryImpl
+import com.ms.moviestvshows.data.repository.PeopleRepositoryImpl
 import com.ms.moviestvshows.data.repository.TvSeriesRepositoryImpl
 import com.ms.moviestvshows.domain.repository.MovieRepository
+import com.ms.moviestvshows.domain.repository.PeopleRepository
 import com.ms.moviestvshows.domain.repository.TvSeriesRepository
 import dagger.Binds
 import dagger.Module
@@ -20,4 +22,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTvSeriesRepository(tvSeriesRepositoryImpl: TvSeriesRepositoryImpl): TvSeriesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPeopleRepository(peopleRepositoryImpl: PeopleRepositoryImpl): PeopleRepository
 }
