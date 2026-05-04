@@ -52,7 +52,8 @@ class CelebritiesViewModel
         }
 
         private fun checkLoadingFinished() {
-            if (_state.value.popularPeople.isNotEmpty() || _state.value.trendingPeople.isNotEmpty() ||
+            if (_state.value.popularPeople.isNotEmpty() ||
+                _state.value.trendingPeople.isNotEmpty() ||
                 _state.value.error != null
             ) {
                 _state.update { it.copy(isLoading = false) }

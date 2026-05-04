@@ -2,6 +2,7 @@ package com.ms.moviestvshows.data.remote.api
 
 import com.ms.moviestvshows.data.remote.dto.MovieListResponseDto
 import com.ms.moviestvshows.data.remote.dto.PersonListResponseDto
+import com.ms.moviestvshows.data.remote.dto.TrendingResponseDto
 import com.ms.moviestvshows.data.remote.dto.TvSeriesListResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -68,6 +69,34 @@ interface TmdbApi {
         @Query("api_key") apiKey: String,
         @Query("page") page: Int = 1,
     ): PersonListResponseDto
+
+    @GET("trending/all/{time_window}")
+    suspend fun getTrendingAll(
+        @Path("time_window") timeWindow: String,
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int = 1,
+    ): TrendingResponseDto
+
+    @GET("trending/movie/{time_window}")
+    suspend fun getTrendingMovies(
+        @Path("time_window") timeWindow: String,
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int = 1,
+    ): MovieListResponseDto
+
+    @GET("trending/tv/{time_window}")
+    suspend fun getTrendingTvSeries(
+        @Path("time_window") timeWindow: String,
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int = 1,
+    ): TvSeriesListResponseDto
+
+    @GET("search/multi")
+    suspend fun multiSearch(
+        @Query("query") query: String,
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int = 1,
+    ): TrendingResponseDto
 
     companion object {
         const val BASE_URL = "https://api.themoviedb.org/3/"

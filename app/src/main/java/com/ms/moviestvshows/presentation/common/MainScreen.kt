@@ -20,12 +20,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ms.moviestvshows.presentation.celebrites.CelebritiesScreen
 import com.ms.moviestvshows.presentation.celebrites.CelebritiesViewModel
-import com.ms.moviestvshows.presentation.info.InfoScreen
-import com.ms.moviestvshows.presentation.info.InfoViewModel
 import com.ms.moviestvshows.presentation.movies.MoviesScreen
 import com.ms.moviestvshows.presentation.movies.MoviesViewModel
+import com.ms.moviestvshows.presentation.search.SearchScreen
+import com.ms.moviestvshows.presentation.search.SearchViewModel
 import com.ms.moviestvshows.presentation.shows.ShowsScreen
 import com.ms.moviestvshows.presentation.shows.ShowsViewModel
+import com.ms.moviestvshows.presentation.trending.TrendingScreen
+import com.ms.moviestvshows.presentation.trending.TrendingViewModel
 
 @Composable
 fun MainScreen() {
@@ -59,9 +61,14 @@ fun MainScreen() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Movies,
+            startDestination = Trending,
             modifier = Modifier.padding(innerPadding),
         ) {
+            composable<Trending> {
+                val viewModel: TrendingViewModel = hiltViewModel()
+                val state by viewModel.state.collectAsState()
+                TrendingScreen(state = state)
+            }
             composable<Movies> {
                 val viewModel: MoviesViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsState()
@@ -77,10 +84,13 @@ fun MainScreen() {
                 val state by viewModel.state.collectAsState()
                 CelebritiesScreen(state = state)
             }
-            composable<Info> {
-                val viewModel: InfoViewModel = hiltViewModel()
+            composable<Search> {
+                val viewModel: SearchViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsState()
-                InfoScreen(state = state)
+                SearchScreen(
+                    state = state,
+                    onQueryChange = viewModel::onQueryChange,
+                )
             }
         }
     }
