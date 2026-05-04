@@ -6,10 +6,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()) {
+fun InfoScreen(state: InfoState) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = "Info Screen")
     }
