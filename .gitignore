@@ -1,0 +1,39 @@
+# Build artifacts
+/build
+/.gradle
+/app/build
+/captures
+
+# IDE Specific
+*.iml
+.idea/
+.idea/workspace.xml
+.idea/libraries
+.idea/caches
+.idea/assetWizardSettings.xml
+.idea/navEditor.xml
+.idea/modules.xml
+
+# Local configuration
+local.properties
+
+# Logs
+*.log
+
+# External native build folder
+.externalNativeBuild
+.cxx
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Secrets
+*.jks
+*.keystore
+google-services.json
