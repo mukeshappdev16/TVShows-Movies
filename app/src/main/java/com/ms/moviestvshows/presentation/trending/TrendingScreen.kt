@@ -3,6 +3,7 @@ package com.ms.moviestvshows.presentation.trending
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,53 +22,77 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.ms.moviestvshows.data.remote.api.TmdbApi
-import com.ms.moviestvshows.domain.model.TrendingItem
-import com.ms.moviestvshows.presentation.celebrites.PersonItem
-import com.ms.moviestvshows.presentation.movies.MovieItem
-import com.ms.moviestvshows.presentation.shows.TvSeriesItem
+import com.ms.moviestvshows.presentation.common.components.HeroSection
+import com.ms.moviestvshows.presentation.common.components.StandardCard
 
 @Composable
 fun TrendingScreen(state: TrendingState) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            TrendingSection("Trending All", state.trendingAll) { items ->
-                LazyRow {
-                    items(items) { item ->
-                        TrendingAllItem(item)
-                    }
-                }
+            if (state.trendingAll.isNotEmpty()) {
+                val heroItem = state.trendingAll.first()
+                HeroSection(
+                    title = heroItem.title,
+                    overview = heroItem.overview,
+                    posterPath = heroItem.posterPath,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
             }
+
             TrendingSection("Trending Movies", state.trendingMovies) { items ->
-                LazyRow {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     items(items) { item ->
-                        MovieItem(item)
+                        StandardCard(
+                            title = item.title,
+                            posterPath = item.posterPath,
+                            voteAverage = item.voteAverage,
+                            modifier = Modifier.width(130.dp)
+                        )
                     }
                 }
             }
+
             TrendingSection("Trending TV Shows", state.trendingTvSeries) { items ->
-                LazyRow {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     items(items) { item ->
-                        TvSeriesItem(item)
+                        StandardCard(
+                            title = item.name,
+                            posterPath = item.posterPath,
+                            voteAverage = item.voteAverage,
+                            modifier = Modifier.width(130.dp)
+                        )
                     }
                 }
             }
+
             TrendingSection("Trending People", state.trendingPeople) { items ->
-                LazyRow {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     items(items) { item ->
-                        PersonItem(item)
+                        StandardCard(
+                            title = item.name,
+                            posterPath = item.profilePath,
+                            modifier = Modifier.width(130.dp)
+                        )
                     }
                 }
             }
+            
+            Spacer(modifier = Modifier.height(32.dp))
         }
 
         if (state.isLoading) {
@@ -93,46 +118,22 @@ fun <T> TrendingSection(
 ) {
     if (items.isNotEmpty()) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(vertical = 8.dp),
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(vertical = 12.dp),
             )
             TextButton(onClick = onSeeAllClick) {
-                Text(text = "See all")
+                Text(text = "See all", color = MaterialTheme.colorScheme.primary)
             }
         }
         content(items)
         Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
-@Composable
-fun TrendingAllItem(item: TrendingItem) {
-    Column(
-        modifier =
-            Modifier
-                .width(120.dp)
-                .padding(end = 8.dp),
-    ) {
-        AsyncImage(
-            model = "${TmdbApi.IMAGE_BASE_URL}${item.posterPath}",
-            contentDescription = item.title,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(180.dp),
-            contentScale = ContentScale.Crop,
-        )
-        Text(
-            text = item.title,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 2,
-            modifier = Modifier.padding(top = 4.dp),
-        )
     }
 }

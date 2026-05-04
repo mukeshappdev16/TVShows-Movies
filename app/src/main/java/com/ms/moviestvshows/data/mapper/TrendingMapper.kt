@@ -7,6 +7,8 @@ fun TrendingItemDto.toDomain(): TrendingItem =
     TrendingItem(
         id = id,
         title = title ?: name ?: "",
+        overview = overview,
         posterPath = posterPath ?: profilePath,
         mediaType = mediaType,
+        voteAverage = voteAverage,
     )

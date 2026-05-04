@@ -3,6 +3,7 @@ package com.ms.moviestvshows.presentation.movies
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,11 +22,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.ms.moviestvshows.data.remote.api.TmdbApi
 import com.ms.moviestvshows.domain.model.Movie
+import com.ms.moviestvshows.presentation.common.components.HeroSection
+import com.ms.moviestvshows.presentation.common.components.StandardCard
 
 @Composable
 fun MoviesScreen(state: MoviesState) {
@@ -35,12 +36,23 @@ fun MoviesScreen(state: MoviesState) {
                 Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
         ) {
+            if (state.popular.isNotEmpty()) {
+                val heroItem = state.popular.first()
+                HeroSection(
+                    title = heroItem.title,
+                    overview = heroItem.overview,
+                    posterPath = heroItem.posterPath,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+            }
+
             MovieSection("Now Playing", state.nowPlaying)
             MovieSection("Popular", state.popular)
             MovieSection("Top Rated", state.topRated)
             MovieSection("Upcoming", state.upcoming)
+            
+            Spacer(modifier = Modifier.height(32.dp))
         }
 
         if (state.isLoading) {
@@ -65,20 +77,25 @@ fun MovieSection(
 ) {
     if (movies.isNotEmpty()) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(vertical = 8.dp),
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(vertical = 12.dp),
             )
             TextButton(onClick = onSeeAllClick) {
-                Text(text = "See all")
+                Text(text = "See all", color = MaterialTheme.colorScheme.primary)
             }
         }
-        LazyRow {
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             items(movies) { movie ->
                 MovieItem(movie)
             }
@@ -89,26 +106,10 @@ fun MovieSection(
 
 @Composable
 fun MovieItem(movie: Movie) {
-    Column(
-        modifier =
-            Modifier
-                .width(120.dp)
-                .padding(end = 8.dp),
-    ) {
-        AsyncImage(
-            model = "${TmdbApi.IMAGE_BASE_URL}${movie.posterPath}",
-            contentDescription = movie.title,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(180.dp),
-            contentScale = ContentScale.Crop,
-        )
-        Text(
-            text = movie.title,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 2,
-            modifier = Modifier.padding(top = 4.dp),
-        )
-    }
+    StandardCard(
+        title = movie.title,
+        posterPath = movie.posterPath,
+        voteAverage = movie.voteAverage,
+        modifier = Modifier.width(130.dp)
+    )
 }

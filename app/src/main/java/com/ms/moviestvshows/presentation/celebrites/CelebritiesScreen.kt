@@ -1,28 +1,38 @@
 package com.ms.moviestvshows.presentation.celebrites
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.ms.moviestvshows.data.remote.api.TmdbApi
 import com.ms.moviestvshows.domain.model.Person
@@ -31,14 +41,74 @@ import com.ms.moviestvshows.domain.model.Person
 fun CelebritiesScreen(state: CelebritiesState) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 16.dp),
         ) {
-            PeopleSection("Popular People", state.popularPeople)
-            PeopleSection("Trending People", state.trendingPeople)
+            // Popular Section - Grid layout as seen in screenshot
+            SectionHeader(title = "Popular", onSeeAllClick = {})
+            val chunkedPopular = state.popularPeople.take(6).chunked(3)
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                chunkedPopular.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        rowItems.forEach { person ->
+                            PopularPersonItem(
+                                person = person,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        // Fill empty spaces if row is not full
+                        repeat(3 - rowItems.size) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                thickness = 0.5.dp,
+                color = Color.Gray.copy(alpha = 0.3f)
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Trending Section - 2-column layout as seen in screenshot
+            SectionHeader(title = "Trending", onSeeAllClick = {})
+            val chunkedTrending = state.trendingPeople.chunked(2)
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                chunkedTrending.take(10).forEach { pair ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        TrendingPersonItem(
+                            person = pair[0],
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (pair.size > 1) {
+                            TrendingPersonItem(
+                                person = pair[1],
+                                modifier = Modifier.weight(1f)
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
         }
 
         if (state.isLoading) {
@@ -56,57 +126,120 @@ fun CelebritiesScreen(state: CelebritiesState) {
 }
 
 @Composable
-fun PeopleSection(
+fun SectionHeader(
     title: String,
-    people: List<Person>,
-    onSeeAllClick: () -> Unit = {},
+    onSeeAllClick: () -> Unit
 ) {
-    if (people.isNotEmpty()) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp
+            )
+        )
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable { onSeeAllClick() },
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = title,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(vertical = 8.dp),
+                text = "See all",
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
             )
-            TextButton(onClick = onSeeAllClick) {
-                Text(text = "See all")
-            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
         }
-        LazyRow {
-            items(people) { person ->
-                PersonItem(person)
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
 @Composable
-fun PersonItem(person: Person) {
+fun PopularPersonItem(
+    person: Person,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier =
-            Modifier
-                .width(120.dp)
-                .padding(end = 8.dp),
+        modifier = modifier.padding(vertical = 4.dp)
     ) {
         AsyncImage(
             model = "${TmdbApi.IMAGE_BASE_URL}${person.profilePath}",
             contentDescription = person.name,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(180.dp),
-            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(0.85f)
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop
         )
         Text(
             text = person.name,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                lineHeight = 18.sp
+            ),
             maxLines = 2,
-            modifier = Modifier.padding(top = 4.dp),
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+        Text(
+            text = person.knownForDepartment,
+            style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
+fun TrendingPersonItem(
+    person: Person,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            model = "${TmdbApi.IMAGE_BASE_URL}${person.profilePath}",
+            contentDescription = person.name,
+            modifier = Modifier
+                .size(60.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+        Column(
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .weight(1f)
+        ) {
+            Text(
+                text = person.name,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = person.knownForDepartment,
+                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+                maxLines = 1
+            )
+        }
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = Color.Gray.copy(alpha = 0.5f),
+            modifier = Modifier.size(20.dp)
         )
     }
 }
