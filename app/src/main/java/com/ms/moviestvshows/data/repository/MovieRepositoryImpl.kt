@@ -4,6 +4,7 @@ import com.ms.moviestvshows.BuildConfig
 import com.ms.moviestvshows.data.mapper.toDomain
 import com.ms.moviestvshows.data.remote.api.TmdbApi
 import com.ms.moviestvshows.domain.model.Movie
+import com.ms.moviestvshows.domain.model.MovieCollection
 import com.ms.moviestvshows.domain.model.MovieDetails
 import com.ms.moviestvshows.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,16 @@ class MovieRepositoryImpl
             flow {
                 try {
                     val response = api.getMovieDetails(movieId, apiKey)
+                    emit(Result.success(response.toDomain()))
+                } catch (e: Exception) {
+                    emit(Result.failure(e))
+                }
+            }
+
+        override fun getMovieCollection(collectionId: Int): Flow<Result<MovieCollection>> =
+            flow {
+                try {
+                    val response = api.getMovieCollection(collectionId, apiKey)
                     emit(Result.success(response.toDomain()))
                 } catch (e: Exception) {
                     emit(Result.failure(e))

@@ -32,8 +32,21 @@ class MovieDetailsViewModel @Inject constructor(
             repository.getMovieDetails(movieId).collect { result ->
                 result.onSuccess { details ->
                     _state.update { it.copy(isLoading = false, movieDetails = details) }
+                    details.collectionId?.let { collectionId ->
+                        getMovieCollection(collectionId)
+                    }
                 }.onFailure { error ->
                     _state.update { it.copy(isLoading = false, error = error.message) }
+                }
+            }
+        }
+    }
+
+    private fun getMovieCollection(collectionId: Int) {
+        viewModelScope.launch {
+            repository.getMovieCollection(collectionId).collect { result ->
+                result.onSuccess { collection ->
+                    _state.update { it.copy(movieCollection = collection) }
                 }
             }
         }

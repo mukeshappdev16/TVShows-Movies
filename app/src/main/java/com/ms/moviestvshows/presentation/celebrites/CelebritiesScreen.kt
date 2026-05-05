@@ -40,7 +40,11 @@ import com.ms.moviestvshows.data.remote.api.TmdbApi
 import com.ms.moviestvshows.domain.model.Person
 
 @Composable
-fun CelebritiesScreen(state: CelebritiesState, windowSizeClass: WindowSizeClass) {
+fun CelebritiesScreen(
+    state: CelebritiesState,
+    windowSizeClass: WindowSizeClass,
+    onPersonClick: (Int) -> Unit
+) {
     val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
     val popularColumnCount = if (isExpanded) 6 else 3
     val trendingColumnCount = if (isExpanded) 4 else 2
@@ -67,7 +71,9 @@ fun CelebritiesScreen(state: CelebritiesState, windowSizeClass: WindowSizeClass)
                         rowItems.forEach { person ->
                             PopularPersonItem(
                                 person = person,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { onPersonClick(person.id) }
                             )
                         }
                         repeat(popularColumnCount - rowItems.size) {
@@ -100,7 +106,9 @@ fun CelebritiesScreen(state: CelebritiesState, windowSizeClass: WindowSizeClass)
                         rowItems.forEach { person ->
                             TrendingPersonItem(
                                 person = person,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { onPersonClick(person.id) }
                             )
                         }
                         repeat(trendingColumnCount - rowItems.size) {

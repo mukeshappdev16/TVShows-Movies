@@ -1,8 +1,10 @@
 package com.ms.moviestvshows.presentation.details
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -36,12 +41,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.ms.moviestvshows.data.remote.api.TmdbApi
+import com.ms.moviestvshows.domain.model.Cast
+import com.ms.moviestvshows.domain.model.Movie
+import com.ms.moviestvshows.domain.model.MovieCollection
+import com.ms.moviestvshows.presentation.common.components.CastSection
+import com.ms.moviestvshows.presentation.common.components.StandardCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailsScreen(
     state: MovieDetailsState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onMovieClick: (Int) -> Unit,
+    onCastClick: (Int) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         state.movieDetails?.let { movie ->
@@ -137,6 +149,18 @@ fun MovieDetailsScreen(
                         lineHeight = 24.sp,
                         modifier = Modifier.padding(top = 8.dp)
                     )
+
+                    if (movie.cast.isNotEmpty()) {
+                        CastSection(cast = movie.cast, onCastClick = onCastClick)
+                    }
+
+                    state.movieCollection?.let { collection ->
+                        CollectionSection(collection = collection, onMovieClick = onMovieClick)
+                    }
+
+                    if (movie.similar.isNotEmpty()) {
+                        SimilarMoviesSection(movies = movie.similar, onMovieClick = onMovieClick)
+                    }
                     
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -168,6 +192,56 @@ fun MovieDetailsScreen(
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.align(Alignment.Center)
             )
+        }
+    }
+}
+
+@Composable
+fun CollectionSection(collection: MovieCollection, onMovieClick: (Int) -> Unit) {
+    Column(modifier = Modifier.padding(top = 24.dp)) {
+        Text(
+            text = "Part of ${collection.name}",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(collection.parts) { movie ->
+                StandardCard(
+                    title = movie.title,
+                    posterPath = movie.posterPath,
+                    voteAverage = movie.voteAverage,
+                    modifier = Modifier.width(130.dp),
+                    onClick = { onMovieClick(movie.id) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SimilarMoviesSection(movies: List<Movie>, onMovieClick: (Int) -> Unit) {
+    Column(modifier = Modifier.padding(top = 24.dp)) {
+        Text(
+            text = "Similar Movies",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(movies) { movie ->
+                StandardCard(
+                    title = movie.title,
+                    posterPath = movie.posterPath,
+                    voteAverage = movie.voteAverage,
+                    modifier = Modifier.width(130.dp),
+                    onClick = { onMovieClick(movie.id) }
+                )
+            }
         }
     }
 }

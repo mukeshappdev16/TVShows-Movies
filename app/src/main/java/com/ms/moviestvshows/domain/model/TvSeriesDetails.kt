@@ -13,4 +13,8 @@ data class TvSeriesDetails(
     val numberOfSeasons: Int,
     val status: String,
     val tagline: String,
+    val seasons: List<Season>,
+    val cast: List<Cast>,
+    val crew: List<Crew>,
+    val similar: List<TvSeries>,
 )

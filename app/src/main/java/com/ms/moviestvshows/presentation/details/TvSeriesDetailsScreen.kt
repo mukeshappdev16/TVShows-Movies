@@ -1,8 +1,10 @@
 package com.ms.moviestvshows.presentation.details
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -36,12 +41,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.ms.moviestvshows.data.remote.api.TmdbApi
+import com.ms.moviestvshows.domain.model.Cast
+import com.ms.moviestvshows.domain.model.Season
+import com.ms.moviestvshows.domain.model.TvSeries
+import com.ms.moviestvshows.presentation.common.components.CastSection
+import com.ms.moviestvshows.presentation.common.components.StandardCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TvSeriesDetailsScreen(
     state: TvSeriesDetailsState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onTvSeriesClick: (Int) -> Unit,
+    onCastClick: (Int) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         state.tvSeriesDetails?.let { series ->
@@ -141,6 +153,18 @@ fun TvSeriesDetailsScreen(
                         lineHeight = 24.sp,
                         modifier = Modifier.padding(top = 8.dp)
                     )
+
+                    if (series.cast.isNotEmpty()) {
+                        CastSection(cast = series.cast, onCastClick = onCastClick)
+                    }
+
+                    if (series.seasons.isNotEmpty()) {
+                        SeasonsSection(seasons = series.seasons)
+                    }
+
+                    if (series.similar.isNotEmpty()) {
+                        SimilarTvSeriesSection(series = series.similar, onTvSeriesClick = onTvSeriesClick)
+                    }
                     
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -172,6 +196,55 @@ fun TvSeriesDetailsScreen(
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.align(Alignment.Center)
             )
+        }
+    }
+}
+
+@Composable
+private fun SeasonsSection(seasons: List<Season>) {
+    Column(modifier = Modifier.padding(top = 24.dp)) {
+        Text(
+            text = "Seasons",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(seasons) { season ->
+                StandardCard(
+                    title = season.name,
+                    posterPath = season.posterPath,
+                    modifier = Modifier.width(130.dp),
+                    // You could add an onClick here to navigate to season details if desired
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SimilarTvSeriesSection(series: List<TvSeries>, onTvSeriesClick: (Int) -> Unit) {
+    Column(modifier = Modifier.padding(top = 24.dp)) {
+        Text(
+            text = "Similar TV Shows",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(series) { item ->
+                StandardCard(
+                    title = item.name,
+                    posterPath = item.posterPath,
+                    voteAverage = item.voteAverage,
+                    modifier = Modifier.width(130.dp),
+                    onClick = { onTvSeriesClick(item.id) }
+                )
+            }
         }
     }
 }

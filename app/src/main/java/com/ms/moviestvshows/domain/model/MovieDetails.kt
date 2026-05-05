@@ -12,4 +12,8 @@ data class MovieDetails(
     val runtime: Int,
     val status: String,
     val tagline: String,
+    val cast: List<Cast>,
+    val crew: List<Crew>,
+    val similar: List<Movie>,
+    val collectionId: Int? = null,
 )

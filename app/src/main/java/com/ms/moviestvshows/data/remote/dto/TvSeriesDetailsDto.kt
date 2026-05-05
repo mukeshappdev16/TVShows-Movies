@@ -23,4 +23,7 @@ data class TvSeriesDetailsDto(
     val numberOfSeasons: Int,
     val status: String,
     val tagline: String?,
+    val seasons: List<SeasonDto>? = null,
+    val credits: CreditsDto? = null,
+    val similar: TvSeriesListResponseDto? = null,
 )

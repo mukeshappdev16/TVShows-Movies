@@ -1,8 +1,10 @@
 package com.ms.moviestvshows.data.mapper
 
+import com.ms.moviestvshows.data.remote.dto.MovieCollectionDetailsDto
 import com.ms.moviestvshows.data.remote.dto.MovieDetailsDto
 import com.ms.moviestvshows.data.remote.dto.MovieDto
 import com.ms.moviestvshows.domain.model.Movie
+import com.ms.moviestvshows.domain.model.MovieCollection
 import com.ms.moviestvshows.domain.model.MovieDetails
 
 fun MovieDto.toDomain(): Movie =
@@ -29,4 +31,18 @@ fun MovieDetailsDto.toDomain(): MovieDetails =
         runtime = runtime ?: 0,
         status = status,
         tagline = tagline ?: "",
+        cast = credits?.cast?.map { it.toDomain() } ?: emptyList(),
+        crew = credits?.crew?.map { it.toDomain() } ?: emptyList(),
+        similar = similar?.results?.map { it.toDomain() } ?: emptyList(),
+        collectionId = belongsToCollection?.id
+    )
+
+fun MovieCollectionDetailsDto.toDomain(): MovieCollection =
+    MovieCollection(
+        id = id,
+        name = name,
+        overview = overview,
+        posterPath = posterPath,
+        backdropPath = backdropPath,
+        parts = parts.map { it.toDomain() }
     )

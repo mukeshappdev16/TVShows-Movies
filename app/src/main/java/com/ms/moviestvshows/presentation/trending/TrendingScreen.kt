@@ -34,7 +34,8 @@ fun TrendingScreen(
     state: TrendingState,
     windowSizeClass: WindowSizeClass,
     onMovieClick: (Int) -> Unit,
-    onTvSeriesClick: (Int) -> Unit
+    onTvSeriesClick: (Int) -> Unit,
+    onPersonClick: (Int) -> Unit
 ) {
     val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
     val cardWidth = if (isExpanded) 180.dp else 130.dp
@@ -106,7 +107,8 @@ fun TrendingScreen(
                         StandardCard(
                             title = item.name,
                             posterPath = item.profilePath,
-                            modifier = Modifier.width(cardWidth)
+                            modifier = Modifier.width(cardWidth),
+                            onClick = { onPersonClick(item.id) }
                         )
                     }
                 }

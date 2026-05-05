@@ -20,6 +20,20 @@ data class MovieDetailsDto(
     val runtime: Int?,
     val status: String,
     val tagline: String?,
+    @SerialName("belongs_to_collection")
+    val belongsToCollection: MovieCollectionDto? = null,
+    val credits: CreditsDto? = null,
+    val similar: MovieListResponseDto? = null,
+)
+
+@Serializable
+data class MovieCollectionDto(
+    val id: Int,
+    val name: String,
+    @SerialName("poster_path")
+    val posterPath: String?,
+    @SerialName("backdrop_path")
+    val backdropPath: String?
 )
 
 @Serializable
