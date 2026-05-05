@@ -31,7 +31,11 @@ import com.ms.moviestvshows.presentation.common.components.HeroSection
 import com.ms.moviestvshows.presentation.common.components.StandardCard
 
 @Composable
-fun MoviesScreen(state: MoviesState, windowSizeClass: WindowSizeClass) {
+fun MoviesScreen(
+    state: MoviesState,
+    windowSizeClass: WindowSizeClass,
+    onMovieClick: (Int) -> Unit
+) {
     val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
     val cardWidth = if (isExpanded) 180.dp else 130.dp
 
@@ -49,14 +53,15 @@ fun MoviesScreen(state: MoviesState, windowSizeClass: WindowSizeClass) {
                     overview = heroItem.overview,
                     posterPath = heroItem.posterPath,
                     modifier = Modifier.padding(bottom = 24.dp),
-                    windowSizeClass = windowSizeClass
+                    windowSizeClass = windowSizeClass,
+                    onClick = { onMovieClick(heroItem.id) }
                 )
             }
 
-            MovieSection("Now Playing", state.nowPlaying, cardWidth = cardWidth)
-            MovieSection("Popular", state.popular, cardWidth = cardWidth)
-            MovieSection("Top Rated", state.topRated, cardWidth = cardWidth)
-            MovieSection("Upcoming", state.upcoming, cardWidth = cardWidth)
+            MovieSection("Now Playing", state.nowPlaying, cardWidth = cardWidth, onMovieClick = onMovieClick)
+            MovieSection("Popular", state.popular, cardWidth = cardWidth, onMovieClick = onMovieClick)
+            MovieSection("Top Rated", state.topRated, cardWidth = cardWidth, onMovieClick = onMovieClick)
+            MovieSection("Upcoming", state.upcoming, cardWidth = cardWidth, onMovieClick = onMovieClick)
             
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -80,6 +85,7 @@ fun MovieSection(
     title: String,
     movies: List<Movie>,
     cardWidth: androidx.compose.ui.unit.Dp,
+    onMovieClick: (Int) -> Unit,
     onSeeAllClick: () -> Unit = {},
 ) {
     if (movies.isNotEmpty()) {
@@ -104,7 +110,7 @@ fun MovieSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(movies) { movie ->
-                MovieItem(movie, cardWidth = cardWidth)
+                MovieItem(movie, cardWidth = cardWidth, onMovieClick = onMovieClick)
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -112,11 +118,12 @@ fun MovieSection(
 }
 
 @Composable
-fun MovieItem(movie: Movie, cardWidth: androidx.compose.ui.unit.Dp) {
+fun MovieItem(movie: Movie, cardWidth: androidx.compose.ui.unit.Dp, onMovieClick: (Int) -> Unit) {
     StandardCard(
         title = movie.title,
         posterPath = movie.posterPath,
         voteAverage = movie.voteAverage,
-        modifier = Modifier.width(cardWidth)
+        modifier = Modifier.width(cardWidth),
+        onClick = { onMovieClick(movie.id) }
     )
 }

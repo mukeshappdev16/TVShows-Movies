@@ -19,6 +19,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ms.moviestvshows.presentation.celebrites.CelebritiesScreen
 import com.ms.moviestvshows.presentation.celebrites.CelebritiesViewModel
+import com.ms.moviestvshows.presentation.details.MovieDetailsScreen
+import com.ms.moviestvshows.presentation.details.MovieDetailsViewModel
+import com.ms.moviestvshows.presentation.details.TvSeriesDetailsScreen
+import com.ms.moviestvshows.presentation.details.TvSeriesDetailsViewModel
 import com.ms.moviestvshows.presentation.movies.MoviesScreen
 import com.ms.moviestvshows.presentation.movies.MoviesViewModel
 import com.ms.moviestvshows.presentation.search.SearchScreen
@@ -27,6 +31,7 @@ import com.ms.moviestvshows.presentation.shows.ShowsScreen
 import com.ms.moviestvshows.presentation.shows.ShowsViewModel
 import com.ms.moviestvshows.presentation.trending.TrendingScreen
 import com.ms.moviestvshows.presentation.trending.TrendingViewModel
+import androidx.navigation.toRoute
 
 @Composable
 fun MainScreen(windowSizeClass: WindowSizeClass) {
@@ -72,17 +77,30 @@ fun MainScreen(windowSizeClass: WindowSizeClass) {
             composable<Trending> {
                 val viewModel: TrendingViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsState()
-                TrendingScreen(state = state, windowSizeClass = windowSizeClass)
+                TrendingScreen(
+                    state = state,
+                    windowSizeClass = windowSizeClass,
+                    onMovieClick = { movieId -> navController.navigate(MovieDetail(movieId)) },
+                    onTvSeriesClick = { tvId -> navController.navigate(TvSeriesDetail(tvId)) }
+                )
             }
             composable<Movies> {
                 val viewModel: MoviesViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsState()
-                MoviesScreen(state = state, windowSizeClass = windowSizeClass)
+                MoviesScreen(
+                    state = state,
+                    windowSizeClass = windowSizeClass,
+                    onMovieClick = { movieId -> navController.navigate(MovieDetail(movieId)) }
+                )
             }
             composable<Shows> {
                 val viewModel: ShowsViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsState()
-                ShowsScreen(state = state, windowSizeClass = windowSizeClass)
+                ShowsScreen(
+                    state = state,
+                    windowSizeClass = windowSizeClass,
+                    onTvSeriesClick = { tvId -> navController.navigate(TvSeriesDetail(tvId)) }
+                )
             }
             composable<Celebrities> {
                 val viewModel: CelebritiesViewModel = hiltViewModel()
@@ -96,6 +114,24 @@ fun MainScreen(windowSizeClass: WindowSizeClass) {
                     state = state,
                     onQueryChange = viewModel::onQueryChange,
                     windowSizeClass = windowSizeClass,
+                    onMovieClick = { movieId -> navController.navigate(MovieDetail(movieId)) },
+                    onTvSeriesClick = { tvId -> navController.navigate(TvSeriesDetail(tvId)) }
+                )
+            }
+            composable<MovieDetail> {
+                val viewModel: MovieDetailsViewModel = hiltViewModel()
+                val state by viewModel.state.collectAsState()
+                MovieDetailsScreen(
+                    state = state,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable<TvSeriesDetail> {
+                val viewModel: TvSeriesDetailsViewModel = hiltViewModel()
+                val state by viewModel.state.collectAsState()
+                TvSeriesDetailsScreen(
+                    state = state,
+                    onBackClick = { navController.popBackStack() }
                 )
             }
         }

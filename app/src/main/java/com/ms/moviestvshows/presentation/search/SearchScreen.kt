@@ -31,6 +31,8 @@ fun SearchScreen(
     state: SearchState,
     onQueryChange: (String) -> Unit,
     windowSizeClass: WindowSizeClass,
+    onMovieClick: (Int) -> Unit,
+    onTvSeriesClick: (Int) -> Unit
 ) {
     Column(
         modifier =
@@ -78,7 +80,14 @@ fun SearchScreen(
                             title = item.title,
                             posterPath = item.posterPath,
                             voteAverage = item.voteAverage,
-                            modifier = Modifier.padding(0.dp)
+                            modifier = Modifier.padding(0.dp),
+                            onClick = {
+                                if (item.mediaType == "movie") {
+                                    onMovieClick(item.id)
+                                } else if (item.mediaType == "tv") {
+                                    onTvSeriesClick(item.id)
+                                }
+                            }
                         )
                     }
                 }
