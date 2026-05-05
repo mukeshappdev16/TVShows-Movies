@@ -23,6 +23,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +40,11 @@ import com.ms.moviestvshows.data.remote.api.TmdbApi
 import com.ms.moviestvshows.domain.model.Person
 
 @Composable
-fun CelebritiesScreen(state: CelebritiesState) {
+fun CelebritiesScreen(state: CelebritiesState, windowSizeClass: WindowSizeClass) {
+    val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+    val popularColumnCount = if (isExpanded) 6 else 3
+    val trendingColumnCount = if (isExpanded) 4 else 2
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -46,9 +52,9 @@ fun CelebritiesScreen(state: CelebritiesState) {
                 .verticalScroll(rememberScrollState())
                 .padding(vertical = 16.dp),
         ) {
-            // Popular Section - Grid layout as seen in screenshot
+            // Popular Section
             SectionHeader(title = "Popular", onSeeAllClick = {})
-            val chunkedPopular = state.popularPeople.take(6).chunked(3)
+            val chunkedPopular = state.popularPeople.take(popularColumnCount * 2).chunked(popularColumnCount)
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -64,8 +70,7 @@ fun CelebritiesScreen(state: CelebritiesState) {
                                 modifier = Modifier.weight(1f)
                             )
                         }
-                        // Fill empty spaces if row is not full
-                        repeat(3 - rowItems.size) {
+                        repeat(popularColumnCount - rowItems.size) {
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }
@@ -80,28 +85,25 @@ fun CelebritiesScreen(state: CelebritiesState) {
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Trending Section - 2-column layout as seen in screenshot
+            // Trending Section
             SectionHeader(title = "Trending", onSeeAllClick = {})
-            val chunkedTrending = state.trendingPeople.chunked(2)
+            val chunkedTrending = state.trendingPeople.chunked(trendingColumnCount)
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                chunkedTrending.take(10).forEach { pair ->
+                chunkedTrending.take(10).forEach { rowItems ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        TrendingPersonItem(
-                            person = pair[0],
-                            modifier = Modifier.weight(1f)
-                        )
-                        if (pair.size > 1) {
+                        rowItems.forEach { person ->
                             TrendingPersonItem(
-                                person = pair[1],
+                                person = person,
                                 modifier = Modifier.weight(1f)
                             )
-                        } else {
+                        }
+                        repeat(trendingColumnCount - rowItems.size) {
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }

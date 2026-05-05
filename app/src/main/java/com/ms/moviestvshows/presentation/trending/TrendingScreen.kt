@@ -24,11 +24,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import com.ms.moviestvshows.presentation.common.components.HeroSection
 import com.ms.moviestvshows.presentation.common.components.StandardCard
 
 @Composable
-fun TrendingScreen(state: TrendingState) {
+fun TrendingScreen(state: TrendingState, windowSizeClass: WindowSizeClass) {
+    val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+    val cardWidth = if (isExpanded) 180.dp else 130.dp
+    
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -41,7 +46,8 @@ fun TrendingScreen(state: TrendingState) {
                     title = heroItem.title,
                     overview = heroItem.overview,
                     posterPath = heroItem.posterPath,
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    modifier = Modifier.padding(bottom = 24.dp),
+                    windowSizeClass = windowSizeClass
                 )
             }
 
@@ -55,7 +61,7 @@ fun TrendingScreen(state: TrendingState) {
                             title = item.title,
                             posterPath = item.posterPath,
                             voteAverage = item.voteAverage,
-                            modifier = Modifier.width(130.dp)
+                            modifier = Modifier.width(cardWidth)
                         )
                     }
                 }
@@ -71,7 +77,7 @@ fun TrendingScreen(state: TrendingState) {
                             title = item.name,
                             posterPath = item.posterPath,
                             voteAverage = item.voteAverage,
-                            modifier = Modifier.width(130.dp)
+                            modifier = Modifier.width(cardWidth)
                         )
                     }
                 }
@@ -86,7 +92,7 @@ fun TrendingScreen(state: TrendingState) {
                         StandardCard(
                             title = item.name,
                             posterPath = item.profilePath,
-                            modifier = Modifier.width(130.dp)
+                            modifier = Modifier.width(cardWidth)
                         )
                     }
                 }

@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,13 +30,17 @@ fun HeroSection(
     title: String,
     overview: String?,
     posterPath: String?,
+    windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+    val height = if (isExpanded) 550.dp else 400.dp
+    
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(400.dp)
+            .height(height)
             .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
             .clickable { onClick() }
     ) {

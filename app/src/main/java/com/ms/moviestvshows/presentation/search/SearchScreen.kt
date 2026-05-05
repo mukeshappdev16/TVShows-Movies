@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +30,7 @@ import com.ms.moviestvshows.presentation.common.components.StandardCard
 fun SearchScreen(
     state: SearchState,
     onQueryChange: (String) -> Unit,
+    windowSizeClass: WindowSizeClass,
 ) {
     Column(
         modifier =
@@ -65,9 +67,9 @@ fun SearchScreen(
                 )
             } else {
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
+                    columns = GridCells.Adaptive(minSize = 130.dp),
                     contentPadding = PaddingValues(vertical = 24.dp),
-                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp),
                     verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxSize(),
                 ) {

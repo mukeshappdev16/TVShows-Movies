@@ -19,6 +19,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +31,10 @@ import com.ms.moviestvshows.presentation.common.components.HeroSection
 import com.ms.moviestvshows.presentation.common.components.StandardCard
 
 @Composable
-fun MoviesScreen(state: MoviesState) {
+fun MoviesScreen(state: MoviesState, windowSizeClass: WindowSizeClass) {
+    val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+    val cardWidth = if (isExpanded) 180.dp else 130.dp
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier =
@@ -43,14 +48,15 @@ fun MoviesScreen(state: MoviesState) {
                     title = heroItem.title,
                     overview = heroItem.overview,
                     posterPath = heroItem.posterPath,
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    modifier = Modifier.padding(bottom = 24.dp),
+                    windowSizeClass = windowSizeClass
                 )
             }
 
-            MovieSection("Now Playing", state.nowPlaying)
-            MovieSection("Popular", state.popular)
-            MovieSection("Top Rated", state.topRated)
-            MovieSection("Upcoming", state.upcoming)
+            MovieSection("Now Playing", state.nowPlaying, cardWidth = cardWidth)
+            MovieSection("Popular", state.popular, cardWidth = cardWidth)
+            MovieSection("Top Rated", state.topRated, cardWidth = cardWidth)
+            MovieSection("Upcoming", state.upcoming, cardWidth = cardWidth)
             
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -73,6 +79,7 @@ fun MoviesScreen(state: MoviesState) {
 fun MovieSection(
     title: String,
     movies: List<Movie>,
+    cardWidth: androidx.compose.ui.unit.Dp,
     onSeeAllClick: () -> Unit = {},
 ) {
     if (movies.isNotEmpty()) {
@@ -97,7 +104,7 @@ fun MovieSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(movies) { movie ->
-                MovieItem(movie)
+                MovieItem(movie, cardWidth = cardWidth)
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -105,11 +112,11 @@ fun MovieSection(
 }
 
 @Composable
-fun MovieItem(movie: Movie) {
+fun MovieItem(movie: Movie, cardWidth: androidx.compose.ui.unit.Dp) {
     StandardCard(
         title = movie.title,
         posterPath = movie.posterPath,
         voteAverage = movie.voteAverage,
-        modifier = Modifier.width(130.dp)
+        modifier = Modifier.width(cardWidth)
     )
 }

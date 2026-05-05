@@ -1,15 +1,14 @@
 package com.ms.moviestvshows.presentation.common
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -30,59 +29,65 @@ import com.ms.moviestvshows.presentation.trending.TrendingScreen
 import com.ms.moviestvshows.presentation.trending.TrendingViewModel
 
 @Composable
-fun MainScreen() {
+fun MainScreen(windowSizeClass: WindowSizeClass) {
     val navController = rememberNavController()
-    Scaffold(
-        bottomBar = {
-            NavigationBar {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                topLevelRoutes.forEach { topLevelRoute ->
-                    NavigationBarItem(
-                        icon = { Icon(topLevelRoute.icon, contentDescription = topLevelRoute.name) },
-                        label = { Text(topLevelRoute.name) },
-                        selected =
-                            currentDestination?.hierarchy?.any {
-                                it.hasRoute(topLevelRoute.route::class)
-                            } == true,
-                        onClick = {
-                            navController.navigate(topLevelRoute.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    
+    val layoutType = when (windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
+        WindowWidthSizeClass.Medium -> NavigationSuiteType.NavigationRail
+        WindowWidthSizeClass.Expanded -> NavigationSuiteType.NavigationRail
+        else -> NavigationSuiteType.NavigationBar
+    }
+
+    NavigationSuiteScaffold(
+        layoutType = layoutType,
+        navigationSuiteItems = {
+            topLevelRoutes.forEach { topLevelRoute ->
+                item(
+                    icon = { Icon(topLevelRoute.icon, contentDescription = topLevelRoute.name) },
+                    label = { Text(topLevelRoute.name) },
+                    selected =
+                        currentDestination?.hierarchy?.any {
+                            it.hasRoute(topLevelRoute.route::class)
+                        } == true,
+                    onClick = {
+                        navController.navigate(topLevelRoute.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
                             }
-                        },
-                    )
-                }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                )
             }
         },
-    ) { innerPadding ->
+    ) {
         NavHost(
             navController = navController,
             startDestination = Trending,
-            modifier = Modifier.padding(innerPadding),
         ) {
             composable<Trending> {
                 val viewModel: TrendingViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsState()
-                TrendingScreen(state = state)
+                TrendingScreen(state = state, windowSizeClass = windowSizeClass)
             }
             composable<Movies> {
                 val viewModel: MoviesViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsState()
-                MoviesScreen(state = state)
+                MoviesScreen(state = state, windowSizeClass = windowSizeClass)
             }
             composable<Shows> {
                 val viewModel: ShowsViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsState()
-                ShowsScreen(state = state)
+                ShowsScreen(state = state, windowSizeClass = windowSizeClass)
             }
             composable<Celebrities> {
                 val viewModel: CelebritiesViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsState()
-                CelebritiesScreen(state = state)
+                CelebritiesScreen(state = state, windowSizeClass = windowSizeClass)
             }
             composable<Search> {
                 val viewModel: SearchViewModel = hiltViewModel()
@@ -90,6 +95,7 @@ fun MainScreen() {
                 SearchScreen(
                     state = state,
                     onQueryChange = viewModel::onQueryChange,
+                    windowSizeClass = windowSizeClass,
                 )
             }
         }

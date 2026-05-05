@@ -19,6 +19,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +31,10 @@ import com.ms.moviestvshows.presentation.common.components.HeroSection
 import com.ms.moviestvshows.presentation.common.components.StandardCard
 
 @Composable
-fun ShowsScreen(state: TvSeriesState) {
+fun ShowsScreen(state: TvSeriesState, windowSizeClass: WindowSizeClass) {
+    val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+    val cardWidth = if (isExpanded) 180.dp else 130.dp
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier =
@@ -43,14 +48,15 @@ fun ShowsScreen(state: TvSeriesState) {
                     title = heroItem.name,
                     overview = heroItem.overview,
                     posterPath = heroItem.posterPath,
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    modifier = Modifier.padding(bottom = 24.dp),
+                    windowSizeClass = windowSizeClass
                 )
             }
 
-            TvSeriesSection("Airing Today", state.airingToday)
-            TvSeriesSection("On The Air", state.onTheAir)
-            TvSeriesSection("Popular", state.popular)
-            TvSeriesSection("Top Rated", state.topRated)
+            TvSeriesSection("Airing Today", state.airingToday, cardWidth = cardWidth)
+            TvSeriesSection("On The Air", state.onTheAir, cardWidth = cardWidth)
+            TvSeriesSection("Popular", state.popular, cardWidth = cardWidth)
+            TvSeriesSection("Top Rated", state.topRated, cardWidth = cardWidth)
             
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -73,6 +79,7 @@ fun ShowsScreen(state: TvSeriesState) {
 fun TvSeriesSection(
     title: String,
     series: List<TvSeries>,
+    cardWidth: androidx.compose.ui.unit.Dp,
     onSeeAllClick: () -> Unit = {},
 ) {
     if (series.isNotEmpty()) {
@@ -97,7 +104,7 @@ fun TvSeriesSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(series) { item ->
-                TvSeriesItem(item)
+                TvSeriesItem(item, cardWidth = cardWidth)
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -105,11 +112,11 @@ fun TvSeriesSection(
 }
 
 @Composable
-fun TvSeriesItem(series: TvSeries) {
+fun TvSeriesItem(series: TvSeries, cardWidth: androidx.compose.ui.unit.Dp) {
     StandardCard(
         title = series.name,
         posterPath = series.posterPath,
         voteAverage = series.voteAverage,
-        modifier = Modifier.width(130.dp)
+        modifier = Modifier.width(cardWidth)
     )
 }
