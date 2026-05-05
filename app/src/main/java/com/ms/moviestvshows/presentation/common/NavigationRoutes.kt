@@ -24,6 +24,15 @@ object Celebrities
 @Serializable
 object Search
 
+@Serializable
+data class MovieDetail(val movieId: Int)
+
+@Serializable
+data class TvSeriesDetail(val tvId: Int)
+
+@Serializable
+data class CelebrityDetail(val personId: Int)
+
 data class TopLevelRoute<T : Any>(
     val name: String,
     val route: T,

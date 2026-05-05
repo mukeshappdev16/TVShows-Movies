@@ -1,14 +1,45 @@
 package com.ms.moviestvshows.data.remote.api
 
+import com.ms.moviestvshows.data.remote.dto.MovieCollectionDetailsDto
+import com.ms.moviestvshows.data.remote.dto.MovieDetailsDto
 import com.ms.moviestvshows.data.remote.dto.MovieListResponseDto
+import com.ms.moviestvshows.data.remote.dto.PersonDetailsDto
 import com.ms.moviestvshows.data.remote.dto.PersonListResponseDto
 import com.ms.moviestvshows.data.remote.dto.TrendingResponseDto
+import com.ms.moviestvshows.data.remote.dto.TvSeriesDetailsDto
 import com.ms.moviestvshows.data.remote.dto.TvSeriesListResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TmdbApi {
+    @GET("movie/{movie_id}")
+    suspend fun getMovieDetails(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("append_to_response") appendToResponse: String = "credits,similar",
+    ): MovieDetailsDto
+
+    @GET("tv/{tv_id}")
+    suspend fun getTvSeriesDetails(
+        @Path("tv_id") tvId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("append_to_response") appendToResponse: String = "credits,similar",
+    ): TvSeriesDetailsDto
+
+    @GET("person/{person_id}")
+    suspend fun getPersonDetails(
+        @Path("person_id") personId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("append_to_response") appendToResponse: String = "combined_credits",
+    ): PersonDetailsDto
+
+    @GET("collection/{collection_id}")
+    suspend fun getMovieCollection(
+        @Path("collection_id") collectionId: Int,
+        @Query("api_key") apiKey: String,
+    ): MovieCollectionDetailsDto
+
     @GET("movie/now_playing")
     suspend fun getNowPlayingMovies(
         @Query("api_key") apiKey: String,

@@ -30,7 +30,13 @@ import com.ms.moviestvshows.presentation.common.components.HeroSection
 import com.ms.moviestvshows.presentation.common.components.StandardCard
 
 @Composable
-fun TrendingScreen(state: TrendingState, windowSizeClass: WindowSizeClass) {
+fun TrendingScreen(
+    state: TrendingState,
+    windowSizeClass: WindowSizeClass,
+    onMovieClick: (Int) -> Unit,
+    onTvSeriesClick: (Int) -> Unit,
+    onPersonClick: (Int) -> Unit
+) {
     val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
     val cardWidth = if (isExpanded) 180.dp else 130.dp
     
@@ -47,7 +53,14 @@ fun TrendingScreen(state: TrendingState, windowSizeClass: WindowSizeClass) {
                     overview = heroItem.overview,
                     posterPath = heroItem.posterPath,
                     modifier = Modifier.padding(bottom = 24.dp),
-                    windowSizeClass = windowSizeClass
+                    windowSizeClass = windowSizeClass,
+                    onClick = {
+                        if (heroItem.mediaType == "movie") {
+                            onMovieClick(heroItem.id)
+                        } else if (heroItem.mediaType == "tv") {
+                            onTvSeriesClick(heroItem.id)
+                        }
+                    }
                 )
             }
 
@@ -61,7 +74,8 @@ fun TrendingScreen(state: TrendingState, windowSizeClass: WindowSizeClass) {
                             title = item.title,
                             posterPath = item.posterPath,
                             voteAverage = item.voteAverage,
-                            modifier = Modifier.width(cardWidth)
+                            modifier = Modifier.width(cardWidth),
+                            onClick = { onMovieClick(item.id) }
                         )
                     }
                 }
@@ -77,7 +91,8 @@ fun TrendingScreen(state: TrendingState, windowSizeClass: WindowSizeClass) {
                             title = item.name,
                             posterPath = item.posterPath,
                             voteAverage = item.voteAverage,
-                            modifier = Modifier.width(cardWidth)
+                            modifier = Modifier.width(cardWidth),
+                            onClick = { onTvSeriesClick(item.id) }
                         )
                     }
                 }
@@ -92,7 +107,8 @@ fun TrendingScreen(state: TrendingState, windowSizeClass: WindowSizeClass) {
                         StandardCard(
                             title = item.name,
                             posterPath = item.profilePath,
-                            modifier = Modifier.width(cardWidth)
+                            modifier = Modifier.width(cardWidth),
+                            onClick = { onPersonClick(item.id) }
                         )
                     }
                 }
