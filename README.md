@@ -45,8 +45,24 @@ The app features a premium "Cinema" theme with deep blacks and bold red accents,
 | <img src="screenshots/phone/Screenshot_20260506_162308.png" width="200"> | <img src="screenshots/phone/Screenshot_20260506_162317.png" width="200"> | <img src="screenshots/phone/Screenshot_20260506_162407.png" width="200"> | <img src="screenshots/phone/Screenshot_20260506_162421.png" width="200"> |
 
 ### Tablet Experience
-<img src="screenshots/tablets/Screenshot_20260506_162912.png" width="800">
-<img src="screenshots/tablets/Screenshot_20260506_162945.png" width="800">
+
+<img src="screenshots/tablets/Screenshot_20260506_162912.png" width="800" alt="Tablet Trending Screen">
+
+<br>
+
+<img src="screenshots/tablets/Screenshot_20260506_162931.png" width="800" alt="Tablet Movies Screen">
+
+<br>
+
+<img src="screenshots/tablets/Screenshot_20260506_162945.png" width="800" alt="Tablet TV Shows Screen">
+
+<br>
+
+<img src="screenshots/tablets/Screenshot_20260506_163037.png" width="800" alt="Tablet Search Screen">
+
+<br>
+
+<img src="screenshots/tablets/Screenshot_20260506_163053.png" width="800" alt="Tablet Details Screen">
 
 ---
 
