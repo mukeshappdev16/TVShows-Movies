@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -21,6 +21,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,6 +33,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +58,8 @@ fun CelebrityDetailsScreen(
     onMovieClick: (Int) -> Unit,
     onTvSeriesClick: (Int) -> Unit
 ) {
+    var isFavorite by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         state.celebrityDetails?.let { details ->
             Column(
@@ -61,6 +70,7 @@ fun CelebrityDetailsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .statusBarsPadding()
                         .padding(top = 64.dp, start = 16.dp, end = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -120,11 +130,26 @@ fun CelebrityDetailsScreen(
                 }
 
                 if (details.knownFor.isNotEmpty()) {
-                    KnownForSection(
-                        items = details.knownFor,
-                        onMovieClick = onMovieClick,
-                        onTvSeriesClick = onTvSeriesClick
-                    )
+                    val movies = details.knownFor.filter { it.mediaType == "movie" }
+                    val tvShows = details.knownFor.filter { it.mediaType == "tv" }
+
+                    if (movies.isNotEmpty()) {
+                        KnownForSection(
+                            title = "Movies",
+                            items = movies,
+                            onMovieClick = onMovieClick,
+                            onTvSeriesClick = onTvSeriesClick
+                        )
+                    }
+
+                    if (tvShows.isNotEmpty()) {
+                        KnownForSection(
+                            title = "TV Shows",
+                            items = tvShows,
+                            onMovieClick = onMovieClick,
+                            onTvSeriesClick = onTvSeriesClick
+                        )
+                    }
                 }
                 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -138,11 +163,28 @@ fun CelebrityDetailsScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            actions = {
+                IconButton(onClick = { /* Handle Share */ }) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                IconButton(onClick = { isFavorite = !isFavorite }) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+            modifier = Modifier.statusBarsPadding()
         )
 
         if (state.isLoading) {
@@ -161,13 +203,14 @@ fun CelebrityDetailsScreen(
 
 @Composable
 fun KnownForSection(
+    title: String,
     items: List<KnownFor>,
     onMovieClick: (Int) -> Unit,
     onTvSeriesClick: (Int) -> Unit
 ) {
     Column(modifier = Modifier.padding(top = 24.dp)) {
         Text(
-            text = "Known For",
+            text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
