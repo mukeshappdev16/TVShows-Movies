@@ -1,6 +1,8 @@
 package com.ms.moviestvshows.presentation.details
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
 import com.ms.moviestvshows.data.remote.api.TmdbApi
 import com.ms.moviestvshows.domain.model.KnownFor
@@ -115,18 +118,38 @@ fun CelebrityDetailsScreen(
                 }
 
                 if (details.biography.isNotEmpty()) {
+                    var isExpanded by remember { mutableStateOf(false) }
+                    
                     Text(
                         text = "Biography",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
                     )
-                    Text(
-                        text = details.biography,
-                        style = MaterialTheme.typography.bodyMedium,
-                        lineHeight = 20.sp,
-                        modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                            .animateContentSize()
+                    ) {
+                        Text(
+                            text = details.biography,
+                            style = MaterialTheme.typography.bodyMedium,
+                            lineHeight = 20.sp,
+                            maxLines = if (isExpanded) Int.MAX_VALUE else 4,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = if (isExpanded) "See less" else "See more",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                            modifier = Modifier
+                                .padding(top = 4.dp)
+                                .clickable { isExpanded = !isExpanded }
+                        )
+                    }
                 }
 
                 if (details.knownFor.isNotEmpty()) {
