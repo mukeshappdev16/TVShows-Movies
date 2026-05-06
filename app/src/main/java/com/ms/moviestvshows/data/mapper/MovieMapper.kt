@@ -34,7 +34,9 @@ fun MovieDetailsDto.toDomain(): MovieDetails =
         cast = credits?.cast?.map { it.toDomain() } ?: emptyList(),
         crew = credits?.crew?.map { it.toDomain() } ?: emptyList(),
         similar = similar?.results?.map { it.toDomain() } ?: emptyList(),
-        collectionId = belongsToCollection?.id
+        collectionId = belongsToCollection?.id,
+        trailerKey = videos?.results?.find { it.type == "Trailer" && it.site == "YouTube" }?.key
+            ?: videos?.results?.firstOrNull()?.key
     )
 
 fun MovieCollectionDetailsDto.toDomain(): MovieCollection =

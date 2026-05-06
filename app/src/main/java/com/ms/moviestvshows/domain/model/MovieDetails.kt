@@ -16,4 +16,5 @@ data class MovieDetails(
     val crew: List<Crew>,
     val similar: List<Movie>,
     val collectionId: Int? = null,
+    val trailerKey: String? = null,
 )

@@ -36,6 +36,8 @@ fun TvSeriesDetailsDto.toDomain(): TvSeriesDetails =
         cast = credits?.cast?.map { it.toDomain() } ?: emptyList(),
         crew = credits?.crew?.map { it.toDomain() } ?: emptyList(),
         similar = similar?.results?.map { it.toDomain() } ?: emptyList(),
+        trailerKey = videos?.results?.find { it.type == "Trailer" && it.site == "YouTube" }?.key
+            ?: videos?.results?.firstOrNull()?.key
     )
 
 fun SeasonDto.toDomain(): Season =

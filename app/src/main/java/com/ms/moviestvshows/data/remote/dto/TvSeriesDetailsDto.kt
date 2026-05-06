@@ -26,4 +26,5 @@ data class TvSeriesDetailsDto(
     val seasons: List<SeasonDto>? = null,
     val credits: CreditsDto? = null,
     val similar: TvSeriesListResponseDto? = null,
+    val videos: VideoResponseDto? = null,
 )

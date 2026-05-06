@@ -1,7 +1,11 @@
 package com.ms.moviestvshows.presentation.common
 
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -9,6 +13,8 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -33,7 +39,6 @@ import com.ms.moviestvshows.presentation.shows.ShowsScreen
 import com.ms.moviestvshows.presentation.shows.ShowsViewModel
 import com.ms.moviestvshows.presentation.trending.TrendingScreen
 import com.ms.moviestvshows.presentation.trending.TrendingViewModel
-import androidx.navigation.toRoute
 
 @Composable
 fun MainScreen(windowSizeClass: WindowSizeClass) {
@@ -48,17 +53,53 @@ fun MainScreen(windowSizeClass: WindowSizeClass) {
         else -> NavigationSuiteType.NavigationBar
     }
 
+    val suiteItemColors = NavigationSuiteDefaults.itemColors(
+        navigationBarItemColors = NavigationBarItemDefaults.colors(
+            selectedIconColor = MaterialTheme.colorScheme.primary,
+            selectedTextColor = MaterialTheme.colorScheme.primary,
+            unselectedIconColor = Color.Gray,
+            unselectedTextColor = Color.Gray,
+            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+        ),
+        navigationRailItemColors = NavigationRailItemDefaults.colors(
+            selectedIconColor = MaterialTheme.colorScheme.primary,
+            selectedTextColor = MaterialTheme.colorScheme.primary,
+            unselectedIconColor = Color.Gray,
+            unselectedTextColor = Color.Gray,
+            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+        )
+    )
+
     NavigationSuiteScaffold(
         layoutType = layoutType,
+        containerColor = MaterialTheme.colorScheme.background,
+        navigationSuiteColors = NavigationSuiteDefaults.colors(
+            navigationBarContainerColor = MaterialTheme.colorScheme.surface,
+            navigationRailContainerColor = MaterialTheme.colorScheme.surface
+        ),
         navigationSuiteItems = {
             topLevelRoutes.forEach { topLevelRoute ->
+                val isSelected = currentDestination?.hierarchy?.any {
+                    it.hasRoute(topLevelRoute.route::class)
+                } == true
+                
                 item(
-                    icon = { Icon(topLevelRoute.icon, contentDescription = topLevelRoute.name) },
-                    label = { Text(topLevelRoute.name) },
-                    selected =
-                        currentDestination?.hierarchy?.any {
-                            it.hasRoute(topLevelRoute.route::class)
-                        } == true,
+                    icon = { 
+                        Icon(
+                            imageVector = topLevelRoute.icon, 
+                            contentDescription = topLevelRoute.name,
+                            tint = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
+                        ) 
+                    },
+                    label = { 
+                        Text(
+                            text = topLevelRoute.name, 
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        ) 
+                    },
+                    selected = isSelected,
                     onClick = {
                         navController.navigate(topLevelRoute.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
@@ -68,6 +109,7 @@ fun MainScreen(windowSizeClass: WindowSizeClass) {
                             restoreState = true
                         }
                     },
+                    colors = suiteItemColors
                 )
             }
         },
@@ -131,6 +173,7 @@ fun MainScreen(windowSizeClass: WindowSizeClass) {
                 val state by viewModel.state.collectAsState()
                 MovieDetailsScreen(
                     state = state,
+                    windowSizeClass = windowSizeClass,
                     onBackClick = { navController.popBackStack() },
                     onMovieClick = { movieId -> navController.navigate(MovieDetail(movieId)) },
                     onCastClick = { personId -> navController.navigate(CelebrityDetail(personId)) }
@@ -141,6 +184,7 @@ fun MainScreen(windowSizeClass: WindowSizeClass) {
                 val state by viewModel.state.collectAsState()
                 TvSeriesDetailsScreen(
                     state = state,
+                    windowSizeClass = windowSizeClass,
                     onBackClick = { navController.popBackStack() },
                     onTvSeriesClick = { tvId -> navController.navigate(TvSeriesDetail(tvId)) },
                     onCastClick = { personId -> navController.navigate(CelebrityDetail(personId)) }

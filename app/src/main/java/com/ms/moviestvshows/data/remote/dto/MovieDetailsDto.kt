@@ -24,6 +24,7 @@ data class MovieDetailsDto(
     val belongsToCollection: MovieCollectionDto? = null,
     val credits: CreditsDto? = null,
     val similar: MovieListResponseDto? = null,
+    val videos: VideoResponseDto? = null,
 )
 
 @Serializable
@@ -40,4 +41,16 @@ data class MovieCollectionDto(
 data class GenreDto(
     val id: Int,
     val name: String,
+)
+
+@Serializable
+data class VideoResponseDto(
+    val results: List<VideoDto>
+)
+
+@Serializable
+data class VideoDto(
+    val key: String,
+    val site: String,
+    val type: String
 )

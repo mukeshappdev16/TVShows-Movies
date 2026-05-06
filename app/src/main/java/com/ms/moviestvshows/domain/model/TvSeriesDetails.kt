@@ -17,4 +17,5 @@ data class TvSeriesDetails(
     val cast: List<Cast>,
     val crew: List<Crew>,
     val similar: List<TvSeries>,
+    val trailerKey: String? = null,
 )

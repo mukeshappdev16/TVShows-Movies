@@ -1,5 +1,7 @@
 package com.ms.moviestvshows.presentation.details
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,9 +43,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,17 +54,20 @@ import com.ms.moviestvshows.data.remote.api.TmdbApi
 import com.ms.moviestvshows.domain.model.Movie
 import com.ms.moviestvshows.domain.model.MovieCollection
 import com.ms.moviestvshows.presentation.common.components.CastSection
+import com.ms.moviestvshows.presentation.common.components.HeroSection
 import com.ms.moviestvshows.presentation.common.components.StandardCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailsScreen(
     state: MovieDetailsState,
+    windowSizeClass: WindowSizeClass,
     onBackClick: () -> Unit,
     onMovieClick: (Int) -> Unit,
     onCastClick: (Int) -> Unit
 ) {
     var isFavorite by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         state.movieDetails?.let { movie ->
@@ -70,29 +76,18 @@ fun MovieDetailsScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                Box(modifier = Modifier.fillMaxWidth().height(350.dp)) {
-                    AsyncImage(
-                        model = "${TmdbApi.IMAGE_BASE_URL}${movie.backdropPath}",
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color.Black.copy(alpha = 0.5f),
-                                        Color.Transparent,
-                                        Color.Black.copy(alpha = 0.7f)
-                                    ),
-                                    startY = 0f,
-                                    endY = Float.POSITIVE_INFINITY
-                                )
-                            )
-                    )
-                }
+                HeroSection(
+                    title = movie.title,
+                    overview = movie.tagline.ifEmpty { movie.status },
+                    posterPath = movie.backdropPath ?: movie.posterPath,
+                    windowSizeClass = windowSizeClass,
+                    onWatchTrailerClick = movie.trailerKey?.let { key ->
+                        {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$key"))
+                            context.startActivity(intent)
+                        }
+                    }
+                )
 
                 Column(
                     modifier = Modifier

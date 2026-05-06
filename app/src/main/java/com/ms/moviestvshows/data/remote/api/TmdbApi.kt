@@ -17,14 +17,14 @@ interface TmdbApi {
     suspend fun getMovieDetails(
         @Path("movie_id") movieId: Int,
         @Query("api_key") apiKey: String,
-        @Query("append_to_response") appendToResponse: String = "credits,similar",
+        @Query("append_to_response") appendToResponse: String = "credits,similar,videos",
     ): MovieDetailsDto
 
     @GET("tv/{tv_id}")
     suspend fun getTvSeriesDetails(
         @Path("tv_id") tvId: Int,
         @Query("api_key") apiKey: String,
-        @Query("append_to_response") appendToResponse: String = "credits,similar",
+        @Query("append_to_response") appendToResponse: String = "credits,similar,videos",
     ): TvSeriesDetailsDto
 
     @GET("person/{person_id}")
